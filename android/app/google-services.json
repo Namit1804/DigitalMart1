@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40806454307",
+    "project_id": "digitalmart-6ef39",
+    "storage_bucket": "digitalmart-6ef39.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40806454307:android:79688a26bb0eb0d1374d96",
+        "android_client_info": {
+          "package_name": "com.namitjain.digital_mart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB982tm2IQl2E52IyudZe2OpHT_E-wn3gw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

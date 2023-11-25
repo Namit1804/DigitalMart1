@@ -4,6 +4,7 @@ import 'package:digital_mart/controllers/auth_controllers.dart';
 import 'package:digital_mart/views/auth/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,6 +16,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final AuthController _authController = AuthController();
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+  bool _isLoading = false;
 
   late String email;
 
@@ -33,10 +36,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   captureImage() async {
     Uint8List im = await _authController.pickProfileImage(ImageSource.camera);
+  }
 
+  registerUser() async {
     setState(() {
-      _image = im;
+      _isLoading = true;
     });
+    if (_image != null) {
+      if (_formkey.currentState!.validate()) {
+        setState(() {
+          _isLoading = true;
+        });
+        String res = await _authController.createNewUser(
+            email, fullName, password, _image);
+
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (res == 'success') {
+          setState(() {
+            _isLoading = false;
+          });
+          Get.to(LoginScreen());
+
+          Get.snackbar('Success', 'Account has been created ',
+              backgroundColor: Colors.pink[400],
+              colorText: Colors.white,
+              margin: EdgeInsets.all(15),
+              icon: Icon(
+                Icons.message,
+                color: Colors.white,
+                size: 40,
+              ));
+        } else {
+          Get.snackbar('Error Occured!', res.toString());
+        }
+      } else {
+        Get.snackbar('Form', 'Form Field is not valid',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            margin: EdgeInsets.all(15),
+            snackPosition: SnackPosition.BOTTOM,
+            icon: Icon(
+              Icons.message,
+              color: Colors.white,
+              size: 40,
+            ));
+      }
+    } else {
+      Get.snackbar('No Image', 'Please capture or Select  an image ',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          margin: EdgeInsets.all(15),
+          snackPosition: SnackPosition.BOTTOM,
+          icon: Icon(
+            Icons.message,
+            color: Colors.white,
+            size: 40,
+          ));
+    }
   }
 
   @override
@@ -163,17 +222,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 InkWell(
                   onTap: () {
-                    if (_formkey.currentState!.validate()) {
-                      _authController.createNewUser(
-                        email,
-                        fullName,
-                        password,
-                        _image,
-                      );
-                      print('success');
-                    } else {
-                      print('Not valid');
-                    }
+                    registerUser();
                   },
                   child: Container(
                     height: 50,
@@ -183,15 +232,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Center(
-                      child: Text(
-                        'Register',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              'Register',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                letterSpacing: 4,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -207,7 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     );
                   },
-                  child: Text('Already have an Account'),
+                  child: Text('Already have an Account?'),
                 ),
               ],
             ),

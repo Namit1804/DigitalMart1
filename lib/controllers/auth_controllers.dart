@@ -24,7 +24,7 @@ class AuthController {
 
   ///Funtion to upload image to firebase storage
 
-  _uploadImageToStorage(Uint8List? image) async {
+  Future<String> _uploadImageToStorage(Uint8List? image) async {
     Reference ref =
         _storage.ref().child('profileImages').child(_auth.currentUser!.uid);
     UploadTask uploadTask = ref.putData(image!);
@@ -43,7 +43,7 @@ class AuthController {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      String downloadUrl = _uploadImageToStorage(image);
+      String downloadUrl = await _uploadImageToStorage(image);
 
       await _firestore.collection('buyers').doc(userCredential.user!.uid).set({
         'fullname': fullName,
@@ -56,6 +56,21 @@ class AuthController {
     } catch (e) {
       res = e.toString();
     }
+    return res;
+  }
+
+  ///function to Login the created user
+  Future<String> loginUser(String email, String paasword) async {
+    String res = 'Some error Occured ';
+
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: paasword);
+
+      res = 'success';
+    } catch (e) {
+      res = e.toString();
+    }
+
     return res;
   }
 }
